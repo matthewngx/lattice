@@ -1,0 +1,117 @@
+syntax = "proto3";
+package ke0.apiserver;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/phonghmnguyen/ke0/apiserver/proto";
+
+
+service Ke0API {
+    // DiscoverMaster returns the info of the current master
+    rpc DiscoverMaster(DiscoverMasterRequest) returns (DiscoverMasterResponse) {}
+
+    rpc Get(GetOrPeakRequest) returns (GetOrPeakResponse) {}
+
+    rpc Peek(GetOrPeakRequest) returns (GetOrPeakResponse) {}
+
+    rpc Set(SetOrUpdateRequest) returns (SetOrUpdateResponse) {}
+
+    rpc Update(SetOrUpdateRequest) returns (SetOrUpdateResponse) {}
+
+    rpc Delete(DeleteOrPurgeRequest) returns (DeleteOrPurgeResponse) {}
+
+    rpc Purge(DeleteOrPurgeRequest) returns (DeleteOrPurgeResponse) {}
+
+    rpc Keys(KeysRequest) returns (KeysResponse) {}
+
+    rpc Entries(EntriesRequest) returns (EntriesResponse) {}
+
+    rpc Size(SizeOrCapRequest) returns (SizeOrCapResponse) {}
+
+    rpc Cap(SizeOrCapRequest) returns (SizeOrCapResponse) {}
+
+    rpc Resize(ResizeRequest) returns (ResizeResponse) {}
+
+    rpc Join(JoinRequest) returns (JoinResponse) {}
+}
+
+message Entry {
+    string key = 1;
+    bytes value = 2;
+    google.protobuf.Timestamp lastUpdated = 3;
+    google.protobuf.Timestamp creationTime = 4;
+    google.protobuf.Timestamp expiryTime = 5;
+    google.protobuf.Duration ttl = 6;
+    map<string, google.protobuf.Value> metadata = 7;
+}
+
+enum ErrorCode {
+    OK = 0;
+    NOTMASTER = 1;
+    INTERNAL = 2;
+}
+
+message DiscoverMasterRequest {}
+message DiscoverMasterResponse {
+    string FQDN = 1;
+    string ID = 2;
+}
+
+
+message GetOrPeakRequest {
+    string key = 1;
+}
+message GetOrPeakResponse {
+    optional Entry entry = 1;
+    bool flag = 2;
+}
+
+message SetOrUpdateRequest {
+    string key = 1;
+    bytes value = 2;
+    google.protobuf.Duration ttl = 3;
+}
+message SetOrUpdateResponse {
+    bool flag = 1;
+    ErrorCode errorCode = 2;
+}
+
+message DeleteOrPurgeRequest {
+    string key = 1;
+}
+message DeleteOrPurgeResponse {
+    bool flag = 1;
+    ErrorCode errorCode = 2;
+}
+
+message KeysRequest {}
+message KeysResponse {
+    repeated string keys = 1;
+}
+
+message EntriesRequest {}
+message EntriesResponse {
+    repeated Entry entries = 1;
+}
+
+message SizeOrCapRequest {}
+message SizeOrCapResponse {
+    int64 size = 1;
+}
+
+message ResizeRequest {
+    int64 size = 1;
+}
+message ResizeResponse {
+    ErrorCode errorCode = 1;
+}
+
+message JoinRequest {
+    string FQDN = 1;
+    string ID = 2;
+}
+message JoinResponse {
+    ErrorCode errorCode = 1;
+}
